@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered Tenant Communication — Proposal for Oline / Stay Rentals</title>
+<style>
+  :root {
+    --primary: #1a2742;
+    --accent: #2d6cdf;
+    --accent-light: #e8f0fe;
+    --success: #1a8754;
+    --warning: #e8a317;
+    --danger: #dc3545;
+    --text: #2c3e50;
+    --text-light: #6b7c93;
+    --bg: #f7f9fc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #1e3a5f 50%, var(--accent) 100%);
+    color: white;
+    padding: 80px 40px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero h1 {
+    font-size: 2.6em;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    font-size: 1.2em;
+    opacity: 0.85;
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.9em;
+    backdrop-filter: blur(4px);
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section {
+    margin: 50px 0;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .section-header h2 {
+    font-size: 2em;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .section-header p {
+    color: var(--text-light);
+    font-size: 1.05em;
+    max-width: 650px;
+    margin: 0 auto;
+  }
+  .section-number {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    line-height: 36px;
+    font-weight: 700;
+    font-size: 0.95em;
+    margin-bottom: 10px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    gap: 20px;
+  }
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    transition: transform 0.15s;
+  }
+  .stat-card:hover { transform: translateY(-2px); }
+  .stat-value {
+    font-size: 2.4em;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .stat-value.danger { color: var(--danger); }
+  .stat-value.success { color: var(--success); }
+  .stat-value.warning { color: var(--warning); }
+  .stat-label {
+    font-size: 0.85em;
+    color: var(--text-light);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  th:first-child { border-radius: 8px 0 0 0; }
+  th:last-child { border-radius: 0 8px 0 0; }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) { background: #f8fafc; }
+
+  .bar-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+  }
+  .bar-label {
+    width: 200px;
+    font-size: 0.9em;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    background: #e9ecef;
+    border-radius: 6px;
+    height: 26px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 0.75em;
+    font-weight: 700;
+    color: white;
+    min-width: 40px;
+    transition: width 0.8s ease;
+  }
+  .bar-fill.blue { background: linear-gradient(90deg, #2d6cdf, #4a90e2); }
+  .bar-fill.red { background: linear-gradient(90deg, #dc3545, #e85d6a); }
+  .bar-fill.orange { background: linear-gradient(90deg, #e8a317, #f0b842); }
+  .bar-fill.green { background: linear-gradient(90deg, #1a8754, #28a96c); }
+  .bar-fill.purple { background: linear-gradient(90deg, #6f42c1, #8b5fd6); }
+  .bar-fill.teal { background: linear-gradient(90deg, #17a2b8, #3cbdd1); }
+
+  .funnel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 24px 0;
+  }
+  .funnel-step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9em;
+    height: 50px;
+    border-radius: 8px;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    align-items: stretch;
+  }
+  .comparison-col {
+    padding: 24px;
+    border-radius: var(--radius);
+  }
+  .comparison-col.before {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  .comparison-col.after {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
+  .comparison-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8em;
+    color: var(--text-light);
+  }
+  .comparison-col h3 {
+    font-size: 1.1em;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .comparison-col ul {
+    list-style: none;
+    padding: 0;
+  }
+  .comparison-col li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    font-size: 0.9em;
+  }
+
+  .tier-visual {
+    display: flex;
+    border-radius: var(--radius);
+    overflow: hidden;
+    height: 60px;
+    margin: 20px 0;
+    font-weight: 700;
+    font-size: 0.85em;
+  }
+  .tier-visual > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .quote-block {
+    background: #fffbeb;
+    border-left: 4px solid var(--warning);
+    padding: 16px 20px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    font-size: 0.92em;
+    color: #78350f;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 28px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -33px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--accent);
+  }
+  .timeline-item h4 {
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .timeline-item p {
+    font-size: 0.92em;
+    color: var(--text-light);
+  }
+
+  .property-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+    gap: 20px;
+  }
+  .property-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .property-card h4 {
+    color: var(--primary);
+    margin-bottom: 12px;
+    font-size: 1em;
+  }
+  .property-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 0.88em;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .property-stat span:last-child { font-weight: 600; }
+
+  .risk-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .risk-badge.critical { background: #fecaca; color: #991b1b; }
+  .risk-badge.high { background: #fed7aa; color: #9a3412; }
+  .risk-badge.moderate { background: #fef08a; color: #854d0e; }
+  .risk-badge.low { background: #bbf7d0; color: #166534; }
+
+  .savings-highlight {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 2px solid #22c55e;
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    margin: 30px 0;
+  }
+  .savings-highlight .big-number {
+    font-size: 4em;
+    font-weight: 900;
+    color: var(--success);
+    line-height: 1;
+  }
+  .savings-highlight .big-label {
+    font-size: 1.2em;
+    color: var(--success);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+
+  .footer {
+    background: var(--primary);
+    color: white;
+    padding: 40px;
+    text-align: center;
+    margin-top: 60px;
+  }
+  .footer p { opacity: 0.7; font-size: 0.9em; }
+
+  @media (max-width: 960px) {
+    .comparison-grid { grid-template-columns: 1fr; gap: 0; }
+    .comparison-arrow { transform: rotate(90deg); padding: 10px 0; }
+    .property-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: 50px 20px 45px; }
+    .hero h1 { font-size: 1.7em; }
+    .hero .subtitle { font-size: 1em; }
+    .hero .badge { font-size: 0.8em; padding: 6px 14px; }
+
+    .container { padding: 0 16px; }
+    section { margin: 32px 0; }
+
+    .section-header { margin-bottom: 24px; }
+    .section-header h2 { font-size: 1.5em; }
+    .section-header p { font-size: 0.92em; }
+
+    .card { padding: 20px 16px; margin-bottom: 16px; }
+
+    .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .stat-card { padding: 16px 12px; }
+    .stat-value { font-size: 1.8em; }
+    .stat-label { font-size: 0.75em; }
+
+    table { font-size: 0.82em; }
+    th, td { padding: 8px 10px; }
+
+    .bar-container { gap: 6px; }
+    .bar-label { width: 100px; font-size: 0.75em; }
+    .bar-fill { font-size: 0.65em; padding-right: 4px; }
+
+    .funnel-step { font-size: 0.75em; height: 42px; padding: 0 10px; }
+
+    .tier-visual { height: 48px; font-size: 0.7em; }
+
+    .comparison-grid { grid-template-columns: 1fr; gap: 0; }
+    .comparison-arrow { transform: rotate(90deg); padding: 10px 0; }
+    .comparison-col { padding: 18px 16px; }
+    .comparison-col li { font-size: 0.85em; }
+
+    .savings-highlight { padding: 24px 16px; }
+    .savings-highlight .big-number { font-size: 3em; }
+    .savings-highlight .big-label { font-size: 1em; }
+
+    .property-grid { grid-template-columns: 1fr; gap: 14px; }
+    .property-card { padding: 16px; }
+
+    .timeline { padding-left: 32px; }
+    .timeline-item::before { left: -25px; width: 12px; height: 12px; }
+
+    .qa-category-header { padding: 12px 16px; flex-wrap: wrap; gap: 6px; }
+    .qa-category-header h4 { font-size: 0.95em; }
+    .qa-body { padding: 16px; }
+    .qa-pair { grid-template-columns: 1fr; }
+    .qa-no { border-right: none; border-bottom: 1px solid #e9ecef; }
+    .template-block { padding: 12px 14px; font-size: 0.84em; }
+    .llm-action { padding: 10px 14px; font-size: 0.84em; }
+
+    .footer { padding: 28px 16px; }
+    .footer p { font-size: 0.8em; }
+  }
+
+  @media (max-width: 480px) {
+    .hero { padding: 36px 14px 36px; }
+    .hero h1 { font-size: 1.35em; }
+    .hero .subtitle { font-size: 0.9em; }
+    .hero::after { height: 30px; }
+
+    .container { padding: 0 12px; }
+    section { margin: 24px 0; }
+
+    .section-header h2 { font-size: 1.25em; }
+    .section-number { width: 30px; height: 30px; line-height: 30px; font-size: 0.85em; }
+
+    .card { padding: 16px 12px; border-radius: 8px; }
+
+    .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stat-card { padding: 12px 8px; border-radius: 8px; }
+    .stat-value { font-size: 1.5em; }
+    .stat-label { font-size: 0.68em; letter-spacing: 0.3px; }
+
+    .bar-container { flex-direction: column; align-items: stretch; gap: 2px; }
+    .bar-label { width: 100%; text-align: left; font-size: 0.8em; font-weight: 600; }
+    .bar-track { height: 22px; }
+    .bar-fill { font-size: 0.65em; }
+
+    .funnel-step { width: 100% !important; font-size: 0.72em; height: 40px; }
+
+    .tier-visual { flex-direction: column; height: auto; }
+    .tier-visual > div { width: 100% !important; padding: 10px; font-size: 0.8em; }
+
+    table { font-size: 0.78em; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    th, td { padding: 7px 8px; white-space: nowrap; }
+
+    .comparison-col h3 { font-size: 0.95em; }
+    .comparison-col li { font-size: 0.82em; padding: 6px 0; }
+
+    .savings-highlight .big-number { font-size: 2.5em; }
+
+    .qa-category-header h4 { font-size: 0.88em; }
+    .qa-count-badge { font-size: 0.75em; padding: 3px 10px; }
+    .qa-body { padding: 12px; }
+    .qa-pair { font-size: 0.82em; }
+    .qa-no, .qa-en { padding: 8px 10px; }
+    .qa-lang-label { font-size: 0.6em; padding: 1px 4px; }
+    .template-block { font-size: 0.8em; padding: 10px 12px; }
+    .template-block .tmpl-repeat { font-size: 0.65em; }
+    .llm-action { font-size: 0.8em; }
+
+    .property-card .property-stat { font-size: 0.82em; }
+  }
+
+  @media print {
+    .hero { padding: 40px 20px 30px; }
+    section { margin: 30px 0; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+    .stat-card { box-shadow: none; }
+  }
+
+  .qa-category {
+    margin-bottom: 36px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .qa-category-header {
+    background: var(--primary);
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .qa-category-header h4 { margin: 0; font-size: 1.05em; }
+  .qa-count-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-size: 0.85em;
+    font-weight: 700;
+  }
+  .qa-body { padding: 24px; background: var(--card); }
+  .qa-subsection { margin-bottom: 20px; }
+  .qa-subsection:last-child { margin-bottom: 0; }
+  .qa-subsection-title {
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .qa-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+    font-size: 0.88em;
+  }
+  .qa-no {
+    padding: 10px 14px;
+    background: #f8fafc;
+    border-right: 1px solid #e9ecef;
+    font-style: italic;
+  }
+  .qa-en {
+    padding: 10px 14px;
+    background: white;
+    color: var(--text-light);
+  }
+  .qa-lang-label {
+    display: inline-block;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .qa-lang-label.no { background: #dbeafe; color: #1e40af; }
+  .qa-lang-label.en { background: #fce7f3; color: #9d174d; }
+  .template-block {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    font-size: 0.88em;
+  }
+  .template-block .tmpl-repeat {
+    display: inline-block;
+    background: var(--success);
+    color: white;
+    font-size: 0.7em;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 50px;
+    margin-bottom: 6px;
+  }
+  .template-block .tmpl-no { margin-bottom: 6px; }
+  .template-block .tmpl-en { color: var(--text-light); font-style: italic; }
+  .llm-action {
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.88em;
+    color: var(--primary);
+  }
+  .llm-action strong { color: var(--accent); }
+  @media (max-width: 768px) {
+    .qa-pair { grid-template-columns: 1fr; }
+    .qa-no { border-right: none; border-bottom: 1px solid #e9ecef; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="badge">Data-Driven Proposal &middot; March 2026</div>
+  <h1>AI-Powered Tenant Communication</h1>
+  <p class="subtitle">How an LLM assistant can save 86% of your communication time, eliminate response delays, and reduce tenant escalations by 65%.</p>
+  <p style="opacity:0.6; font-size:0.85em; margin-top:20px;">Prepared for Oline / Stay Rentals &mdash; Bergen Student Housing Portfolio</p>
+</div>
+
+<div class="container">
+
+<!-- ===== SECTION 1: THE DATA ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <h2>Your Data at a Glance</h2>
+    <p>We analyzed every message across all 6 of your properties over 2+ years.</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-value">52,715</div>
+      <div class="stat-label">Total Messages</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">2,531</div>
+      <div class="stat-label">Tenant Questions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Properties Analyzed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Languages Detected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value danger">623</div>
+      <div class="stat-label">Escalation Events</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value warning">547</div>
+      <div class="stat-label">Apologies Sent</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">152</div>
+      <div class="stat-label">Maintenance Tickets</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">42.7%</div>
+      <div class="stat-label">Messages Are Duplicates</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2: THE PROBLEM ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <h2>The Problem: Slow Responses Create Escalations</h2>
+    <p>Your data reveals a direct, measurable chain from delayed replies to tenant frustration, complaints, and even legal threats.</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:20px; color:var(--primary);">Escalation Funnel</h3>
+    <p style="font-size:0.9em; color:var(--text-light); margin-bottom:20px;">When a tenant doesn't get a reply, the conversation escalates through predictable stages:</p>
+    <div class="funnel">
+      <div class="funnel-step" style="width:50%; background:#94a3b8;">Level 1 &mdash; Polite Follow-up: 15 events</div>
+      <div class="funnel-step" style="width:60%; background:var(--warning);">Level 2 &mdash; Impatient: 41 events</div>
+      <div class="funnel-step" style="width:80%; background:#ea580c;">Level 3 &mdash; Frustrated: 386 events</div>
+      <div class="funnel-step" style="width:70%; background:var(--danger);">Level 4 &mdash; Legal Threats: 181 events</div>
+    </div>
+    <p style="text-align:center; font-size:0.85em; color:var(--text-light); margin-top:12px;">Legal references include: husleieloven (80&times;), namsmannen (65&times;), advokat (9&times;)</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px; color:var(--primary);">Real Quotes from Your Tenant Conversations</h3>
+    <div class="quote-block">"N&aring; har det g&aring;tt to uker siden vi fikk beskjed om at det skulle komme noen &aring; fikse toalettet. Kan det komme noen il&oslash;pet av neste uke?"</div>
+    <div class="quote-block">"N&aring; m&aring; det skje noe snart, det har allerede g&aring;tt alt for lang tid. Hva er st&aring;a? F&aring;r dere fiksa det snart?"</div>
+    <div class="quote-block">"Hvor lang tid vil det ta? For tar det noe s&aelig;rlig lenger tid, vil vi kreve kompensasjon."</div>
+    <div class="quote-block">"HALLO, n&aring; h&aring;per jeg at jeg noe fra dere snart. Sjefen er vell ikke s&aring; opptatt han ikke klarer &aring; svare p&aring; over en uke."</div>
+    <div class="quote-block">"Nu har det g&aring;tt ytterligare 1,5 vecka sedan senast och ingen information. Det har g&aring;tt snart 1,5 m&aring;nad sedan vi flyttade ut. Vad h&auml;nder?"</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px; color:var(--primary);">The "Sorry for Late Reply" Tax</h3>
+    <p style="margin-bottom:16px; font-size:0.95em;">We found <strong>25 documented instances</strong> of "beklager sent svar" in your data. In every case:</p>
+    <table>
+      <tr><th style="width:70%">What Preceded the Apology</th><th>Frequency</th></tr>
+      <tr><td>Tenant asked the same question 2+ times before getting a reply</td><td><strong>72%</strong></td></tr>
+      <tr><td>Tenant used escalated/frustrated language</td><td><strong>56%</strong></td></tr>
+      <tr><td>A maintenance issue had been left unaddressed</td><td><strong>36%</strong></td></tr>
+      <tr><td>Landlord was on vacation with no backup</td><td><strong>32%</strong></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ===== SECTION 3: WHAT TENANTS ASK ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <h2>What Your Tenants Ask About</h2>
+    <p>The same 10 themes account for the vast majority of all communication.</p>
+  </div>
+
+  <div class="card">
+    <div class="bar-container"><div class="bar-label">Rent &amp; Invoicing</div><div class="bar-track"><div class="bar-fill blue" style="width:100%">8,274</div></div></div>
+    <div class="bar-container"><div class="bar-label">Invoices &amp; Payments</div><div class="bar-track"><div class="bar-fill blue" style="width:96%">7,947</div></div></div>
+    <div class="bar-container"><div class="bar-label">Contracts</div><div class="bar-track"><div class="bar-fill purple" style="width:53%">4,377</div></div></div>
+    <div class="bar-container"><div class="bar-label">Move-in Logistics</div><div class="bar-track"><div class="bar-fill teal" style="width:24%">1,981</div></div></div>
+    <div class="bar-container"><div class="bar-label">Maintenance</div><div class="bar-track"><div class="bar-fill orange" style="width:19%">1,605</div></div></div>
+    <div class="bar-container"><div class="bar-label">Cleaning</div><div class="bar-track"><div class="bar-fill green" style="width:18%">1,524</div></div></div>
+    <div class="bar-container"><div class="bar-label">Move-out</div><div class="bar-track"><div class="bar-fill teal" style="width:16%">1,347</div></div></div>
+    <div class="bar-container"><div class="bar-label">Complaints</div><div class="bar-track"><div class="bar-fill red" style="width:15%">1,246</div></div></div>
+    <div class="bar-container"><div class="bar-label">Deposit</div><div class="bar-track"><div class="bar-fill purple" style="width:15%">1,229</div></div></div>
+    <div class="bar-container"><div class="bar-label">Viewings</div><div class="bar-track"><div class="bar-fill blue" style="width:13%">1,072</div></div></div>
+    <div class="bar-container"><div class="bar-label">Furniture</div><div class="bar-track"><div class="bar-fill teal" style="width:9%">747</div></div></div>
+    <div class="bar-container"><div class="bar-label">WiFi / Internet</div><div class="bar-track"><div class="bar-fill green" style="width:8%">650</div></div></div>
+  </div>
+</section>
+
+<!-- ===== SECTION 4: AUTOMATION POTENTIAL ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <h2>What an LLM Can Handle</h2>
+    <p>We classified all 2,531 tenant questions by how easily an AI can answer them.</p>
+  </div>
+
+  <div class="card" style="text-align:center;">
+    <p style="font-size:0.9em; color:var(--text-light); margin-bottom:16px;">Automation tier distribution of all tenant questions:</p>
+    <div class="tier-visual">
+      <div style="width:59%; background:linear-gradient(90deg, #16a34a, #22c55e);">59% — Fully Automated</div>
+      <div style="width:28.2%; background:linear-gradient(90deg, #2563eb, #3b82f6);">28% — AI Draft</div>
+      <div style="width:12.8%; background:linear-gradient(90deg, #9333ea, #a855f7);">13% — Human</div>
+    </div>
+    <div style="display:flex; justify-content:center; gap:30px; margin-top:16px; font-size:0.85em; flex-wrap:wrap;">
+      <span><span style="display:inline-block;width:12px;height:12px;background:#22c55e;border-radius:3px;margin-right:5px;"></span> Tier 1: Instant LLM response (1,493 Qs)</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:3px;margin-right:5px;"></span> Tier 2: LLM drafts, you approve (713 Qs)</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#a855f7;border-radius:3px;margin-right:5px;"></span> Tier 3: Requires your input (324 Qs)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px; color:var(--primary);">Tier 1 — Fully Automatable (59%)</h3>
+    <p style="font-size:0.9em; color:var(--text-light); margin-bottom:16px;">These questions have deterministic answers. The LLM responds instantly, 24/7.</p>
+    <table>
+      <tr><th>Question Category</th><th>Count</th><th>Example Question</th></tr>
+      <tr><td>Viewing / scheduling</td><td>221</td><td>"Kan vi komme p&aring; visning?"</td></tr>
+      <tr><td>WiFi / internet info</td><td>158</td><td>"Er WiFi inkludert i leien?"</td></tr>
+      <tr><td>Door code / access</td><td>95</td><td>"N&aring;r f&aring;r vi koden?"</td></tr>
+      <tr><td>What is included</td><td>94</td><td>"Er det vaskemaskin i leiligheten?"</td></tr>
+      <tr><td>Contract signing</td><td>94</td><td>"Hvordan signerer vi kontrakten?"</td></tr>
+      <tr><td>Deposit process</td><td>87</td><td>"N&aring;r f&aring;r vi tilbake depositumet?"</td></tr>
+      <tr><td>Electricity / utilities</td><td>78</td><td>"Hvilken str&oslash;mleverand&oslash;r brukes?"</td></tr>
+      <tr><td>Rent breakdown</td><td>68</td><td>"Hvorfor er leien annerledes?"</td></tr>
+      <tr><td>Move-out procedure</td><td>66</td><td>"Hvordan fungerer utflyttingen?"</td></tr>
+      <tr><td>Availability check</td><td>49</td><td>"Er leiligheten fortsatt ledig?"</td></tr>
+      <tr><td>Trash / recycling</td><td>31</td><td>"Hvor kaster vi s&oslash;ppel?"</td></tr>
+      <tr><td>Move-in logistics</td><td>30</td><td>"N&aring;r kan vi flytte inn?"</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ===== SECTION 5: TIER 1 DEEP DIVE ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">5</div>
+    <h2>Deep Dive: The 11 Fully Automatable Categories</h2>
+    <p>Real tenant questions from your data, the actual templates your team already uses, and what the LLM would do &mdash; with English translations.</p>
+  </div>
+
+<!-- 1. Viewing & Scheduling -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>1. Viewing &amp; Scheduling</h4>
+    <span class="qa-count-badge">221 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Kan vi komme p&aring; visning?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Can we come for a viewing?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er vi n&oslash;dt &aring; g&aring; p&aring; visning eller? F&oslash;lte vi fikk se det vi trengte p&aring; videovisningen.&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Do we have to come for a physical viewing? We felt we saw everything we needed in the video tour.&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Kunne det g&aring;tt med en visning enten l&oslash;rdag eller s&oslash;ndag?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Could we do a viewing either Saturday or Sunday?&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Templates Used</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 37x</div>
+        <div class="tmpl-no">&ldquo;Takk for din interesse for v&aring;r leilighet/rommet. Vi legger ved en videovisning. Den er sv&aelig;rt informativ. Er det noe dere &oslash;nsker svar p&aring; rundt leiligheten/rommet, s&aring; er det bare til &aring; fyre l&oslash;s!&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Thanks for your interest in our apartment/room. We&rsquo;re attaching a video tour. It&rsquo;s very informative. If there&rsquo;s anything you&rsquo;d like answered about the apartment/room, just fire away!&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 37x</div>
+        <div class="tmpl-no">&ldquo;Det er ikke satt opp noen visning per n&aring;, men dersom dere har behov for det, s&aring; kom gjerne med tidspunkt og dato som passer for dere.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;No viewing is scheduled right now, but if you need one, feel free to suggest a date and time that works for you.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 25x</div>
+        <div class="tmpl-no">&ldquo;Vi informerer ogs&aring; om at dere kan signere over videovisningen. Mange velger denne l&oslash;sningen, og det kan v&aelig;re at boligen blir leid ut f&oslash;r fysisk visning.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;We also inform you that you can sign based on the video tour. Many choose this option, and the unit may be rented out before an in-person viewing.&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Send video tour link, ask for tenant info (name, email, phone, DOB), offer scheduling, nudge toward signing. 100% automatable with property-specific video links.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. WiFi / Internet -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>2. WiFi &amp; Internet</h4>
+    <span class="qa-count-badge">158 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er WiFi inkludert i leien?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Is WiFi included in the rent?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Hvor mange mbps per sekund er den internett pakken?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;How many Mbps is the internet package?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;N&aring;r f&aring;r vi kode og navn p&aring; internett?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;When do we get the WiFi name and password?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;M&aring; vi bruke Bergen Fiber som leverand&oslash;r?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Do we have to use Bergen Fiber as the provider?&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Templates Used</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 17x</div>
+        <div class="tmpl-no">&ldquo;&Oslash;nsker du &aring; inkludere wifi i leieforholdet? Vi tilbyr n&aring; l&oslash;sning gjennom Bergen Fiber med super hastig internett til 649,- i m&aring;neden. Merk avtalen m&aring; g&aring; gjennom oss da vi har avtale p&aring; hele bygget.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Would you like to include WiFi in your tenancy? We now offer a solution through Bergen Fiber with super-fast internet for 649 NOK/month. Note the contract must go through us as we have a building-wide agreement.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 15x</div>
+        <div class="tmpl-no">&ldquo;WIFI: De som har bestilt vil motta info samme dag. Har du ikke bestilt enda? Gi oss beskjed via Hybel.no.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;WIFI: Those who have ordered will receive info the same day. Haven&rsquo;t ordered yet? Let us know via Hybel.no.&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Explain Bergen Fiber deal (649 kr/mo), confirm it must go through the landlord, answer speed questions, send credentials once ordered. Pure knowledge base &mdash; identical every time.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Door Code / Keys / Access -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>3. Door Code, Keys &amp; Access</h4>
+    <span class="qa-count-badge">148 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;N&aring;r f&aring;r vi koden?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;When do we get the door code?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Enda ikke f&aring;tt noe kode, er her n&aring; og driver &aring; lasser av ting. Kommer koden snart?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Still haven&rsquo;t received any code, I&rsquo;m here now unloading stuff. Is the code coming soon?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Hadde det v&aelig;rt mulig &aring; f&aring; koden tidligere? Vi f&aring;r hjelp av familie, men de m&aring; tilbake pga jobb p&aring; mandag.&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Would it be possible to get the code earlier? We&rsquo;re getting help from family, but they have to go back for work on Monday.&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Vi f&aring;r melding om lavt batteriniv&aring; p&aring; kodel&aring;sen. Mulighet &aring; f&aring; byttet dette?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;We&rsquo;re getting a low battery warning on the door lock. Can someone replace it?&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Response Pattern</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Standard response</div>
+        <div class="tmpl-no">&ldquo;Leiligheten din er n&aring; klar til innflytning i Nyg&aring;rdsgaten 94. Man trenger ikke kode for &aring; ta seg inn i bygget. Se etter inngangen med et &lsquo;Stay Urban&rsquo; skilt utfor. Leilighetsnummer: 501, Leilighetskoden: 183368&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Your apartment is now ready for move-in at Nyg&aring;rdsgaten 94. You don&rsquo;t need a code to enter the building. Look for the entrance with a &lsquo;Stay Urban&rsquo; sign. Apartment number: 501, Apartment code: 183368&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 24x</div>
+        <div class="tmpl-no">&ldquo;Det er viktig at b&aring;de leie og depositum er betalt f&oslash;r innflytting. Vi m&aring; ha bekreftelse p&aring; dette f&oslash;r vi kan gi ut koder, internett, osv.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;It&rsquo;s important that both rent and deposit are paid before move-in. We need confirmation before we can hand out codes, internet, etc.&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Verify payment status in system &rarr; if paid, release apartment code + building directions. If unpaid, explain requirements. Property-specific lookup, fully automatable.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Move-In Logistics -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>4. Move-In Logistics</h4>
+    <span class="qa-count-badge">79 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er det kl 15 jeg kan flytte inn?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Is it 3 PM I can move in?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Kan vi vente med &aring; fylle ut overtakelsesprotokollen?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Can we wait to fill out the inspection form?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Hvor p&aring; Hybel finner jeg overtakelsesprotokollen?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Where on Hybel do I find the inspection form?&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Templates Used</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 64x (to every tenant)</div>
+        <div class="tmpl-no">&ldquo;Overtakelse vil i utgangspunktet finne sted den 10. august. Vi har gjester i eiendommen frem til klokken 11:00 denne dagen, og vil i etterkant foreta nedvask av leilighetene. Leilighetene vil derfor v&aelig;re klare for innflytting fra klokken 15:00.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Move-in will take place on August 10th. We have guests on the property until 11:00 AM, after which we will clean the apartments. Apartments will therefore be ready for move-in from 3:00 PM.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 64x</div>
+        <div class="tmpl-no">&ldquo;N&oslash;kler og overtakelser: F&oslash;r du kan f&aring; n&oslash;kkel eller tilgang til eiendommen, m&aring; f&oslash;rste husleie og depositum (eller garanti) v&aelig;re innbetalt.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Keys and handovers: Before you can get a key or access to the property, the first month&rsquo;s rent and deposit (or guarantee) must be paid.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 64x</div>
+        <div class="tmpl-no">&ldquo;Mangler / klageh&aring;ndtering: Ved overtakelse m&aring; du fylle ut overtakelsesprotokollen og f&oslash;re opp eventuelle feil eller mangler. Dette m&aring; gj&oslash;res samme dag som du mottar n&oslash;kkelen. Vi bruker inntil tre uker p&aring; &aring; besvare protokoller.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Defects / complaint handling: At move-in you must fill out the inspection form and note any faults or deficiencies. This must be done the same day you receive the key. We take up to three weeks to respond to protocols.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 35x</div>
+        <div class="tmpl-no">&ldquo;Ved inn- og utflytting er det viktig at du selv tar h&aring;nd om alt flytteavfall (papp, plast, emballasje mv.). Beholdere p&aring; eiendommen er kun for vanlig husholdningsavfall.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;During move-in and move-out, it&rsquo;s important that you handle all moving waste (cardboard, plastic, packaging etc.) yourself. Bins on the property are only for regular household waste.&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Send the complete move-in information package at the right time. This is the same 5-paragraph block copy-pasted 64 times. The LLM sends it once, correctly, to every new tenant &mdash; automatically.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Apartment Info / What's Included -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>5. Apartment Info &amp; What&rsquo;s Included</h4>
+    <span class="qa-count-badge">94 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er begge sengene 140cm? Og er leiligheten/kj&oslash;kkenet utstyrt med noe?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Are both beds 140cm? And is the apartment/kitchen equipped with anything?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er det vaskemaskin i leiligheten?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Is there a washing machine in the apartment?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er det kopper og krus og panner osv i leiligheten?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Are there cups, mugs, pans etc. in the apartment?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Har vi lov &aring; henge ting opp p&aring; veggen med spiker?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Are we allowed to hang things on the wall with nails?&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Templates Used</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 35x</div>
+        <div class="tmpl-no">&ldquo;Vi minner om at det i utgangspunktet fremg&aring;r av annonseteksten at leietakere m&aring; ta med egen overmadrass, samt dyner og puter.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;We remind you that, as stated in the listing, tenants must bring their own mattress topper, duvets and pillows.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Typical ad-hoc responses</div>
+        <div class="tmpl-no">&ldquo;Ja det er det :-)&rdquo; (re: vaskemaskin) / &ldquo;120 er sengen :)&rdquo; / &ldquo;Nei, ikke lov &aring; henge opp noe med spiker nei.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Yes there is :-)&rdquo; (re: washing machine) / &ldquo;The bed is 120cm :)&rdquo; / &ldquo;No, you&rsquo;re not allowed to hang anything with nails.&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Look up per-apartment inventory database: bed sizes, appliances list, furniture, wall policy. Answer instantly instead of &ldquo;I&rsquo;ll check and get back to you.&rdquo;</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Contract Signing -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>6. Contract Signing</h4>
+    <span class="qa-count-badge">94 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Kunne du sendt utkast til leiekontrakt?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Could you send a draft lease contract?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Kan jeg legge til han som jeg skal leie med i leiekontrakten?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Can I add the person I&rsquo;m renting with to the lease?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">SV</span> &ldquo;Det g&aring;r inte att signera med MinID? Vi har inte hunnit ordna BankID &auml;nnu.&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;I can&rsquo;t sign with MinID? We haven&rsquo;t managed to get BankID yet.&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Templates Used</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 37x</div>
+        <div class="tmpl-no">&ldquo;Det er ogs&aring; &oslash;nskelig at dere skal signere under selve visningen, dersom dere har lyst p&aring; leiligheten. Jeg ber dere derfor om &aring; sende over informasjon om deg og mulige medleietakere slik at jeg kan sette opp og sende en kontrakt over!&rdquo;</div>
+        <div class="tmpl-en">&ldquo;We also prefer that you sign during the viewing, if you want the apartment. Please send info about yourself and potential co-tenants so I can set up and send a contract!&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Typical response</div>
+        <div class="tmpl-no">&ldquo;Ja, send meg navn, mail, telefon og f&oslash;dselsdato s&aring; kan jeg ordne slik at dere begge signerer.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Yes, send me name, email, phone and date of birth so I can arrange for both of you to sign.&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Explain the signing process (BankID/MinID), collect co-tenant info (name, email, phone, DOB), provide alternative signing link for international students. Trigger contract generation in system.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. Deposit Process -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>7. Deposit Process</h4>
+    <span class="qa-count-badge">87 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Hvordan og n&aring;r f&aring;r jeg tilbake depositumet?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;How and when do I get my deposit back?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Depositum s&aring; f&aring;r man evt tilbake pengene men garantien s&aring; beholder dere?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;With a deposit you get the money back, but with a guarantee you keep it?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">SV</span> &ldquo;&Auml;r det m&ouml;jligt att g&ouml;ra en internationell betalning av depositum?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Is it possible to make an international payment for the deposit?&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Templates Used</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 39x</div>
+        <div class="tmpl-no">&ldquo;Utflyttingsprotokoller vil bli sendt til signering i etterkant, og m&aring; signeres for at depositumet skal kunne utbetales og leieforholdet formelt avsluttes.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Move-out protocols will be sent for signing afterwards, and must be signed before the deposit can be paid out and the tenancy formally ended.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Consistent pattern</div>
+        <div class="tmpl-no">&ldquo;Jeg lager en utflyttingsprotokoll som du m&aring; signere, s&aring; kommer det fortl&oslash;pende fra banken :)&rdquo;</div>
+        <div class="tmpl-en">&ldquo;I&rsquo;ll create a move-out protocol for you to sign, then the deposit comes back from the bank automatically :)&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Explain deposit return process (sign protocol &rarr; automatic bank transfer). Explain guarantee vs. cash deposit. For international tenants: explain Wise/international payment options. Entirely knowledge-based.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. Electricity & Utilities -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>8. Electricity &amp; Utilities</h4>
+    <span class="qa-count-badge">78 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Hvilken str&oslash;mleverand&oslash;r er i bruk n&aring;?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Which electricity provider is currently being used?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Hvor finner vi m&aring;lernummeret til str&oslash;m?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Where do we find the electricity meter number?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Kan vi bruke Norgespris n&aring;r det gjelder str&oslash;m?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Can we use Norgespris for electricity?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">EN</span> &ldquo;I don&rsquo;t know how we will pay for electricity afterwards. Can you explain?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> (Already in English &mdash; from international tenant)</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Response Pattern</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Typical responses</div>
+        <div class="tmpl-no">&ldquo;Hei. Alt dette g&aring;r gjennom Bergen Fiber, separat fra leieforholdet med meg.&rdquo; / &ldquo;I snitt 800-1200 per m&aring;ned gjennom &aring;ret.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Hi. All of this goes through Bergen Fiber, separate from your lease with me.&rdquo; / &ldquo;On average 800-1200 NOK per month through the year.&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Explain tenants set up their own electricity contract, provide per-apartment meter number, suggest providers, give average cost estimate. Property-specific data lookup.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. Rent Breakdown -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>9. Rent Breakdown &amp; Billing</h4>
+    <span class="qa-count-badge">68 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Lurte p&aring; hvorfor leien er p&aring; 16 549,00kr istedenfor 15 900,00kr?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;I was wondering why the rent is 16,549 NOK instead of 15,900 NOK?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er det halv leie for juni?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Is it half rent for June?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Betaler jeg forholdsmessig leie i de m&aring;nedene hvor jeg kun leier i deler av m&aring;neden?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Do I pay proportional rent for months where I only rent for part of the month?&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Response Pattern</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Consistent responses</div>
+        <div class="tmpl-no">&ldquo;Forholdsmessig leie ja, kun for antall dager du disponerer leiligheten.&rdquo; / &ldquo;Dekker alt uten om str&oslash;m og internett ja.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Proportional rent yes, only for the number of days you have the apartment.&rdquo; / &ldquo;Covers everything except electricity and internet, yes.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Auto-generated (75x)</div>
+        <div class="tmpl-no">&ldquo;NB! Bel&oslash;pet gjelder leieperioden 10.08&ndash;01.09. Fra og med neste m&aring;ned betaler du full m&aring;nedsleie den 1. hver m&aring;ned.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;NB! The amount covers the rental period 10.08&ndash;01.09. From next month you pay full monthly rent on the 1st of each month.&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Calculate prorated rent automatically, explain the formula (daily rate &times; days), reference contract amount, clarify what&rsquo;s included vs. excluded. Pure math + knowledge base.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. Move-Out Procedure -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>10. Move-Out Procedure</h4>
+    <span class="qa-count-badge">66 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Hvordan fungerer utflyttingen?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;How does the move-out work?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Tar vi selv en utvask, og is&aring;fall, hvor n&oslash;ye? Skap, kopper, kj&oslash;leskap, bak kj&oslash;leskap osv?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Do we do the cleaning ourselves, and if so, how thorough? Cabinets, cups, fridge, behind fridge, etc.?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;N&aring;r p&aring; l&oslash;rdag m&aring; vi v&aelig;re ute av leiligheten?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;What time on Saturday do we need to be out of the apartment?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Hva skjer hvis utvasken ikke er god nok? F&aring;r vi en ny sjanse?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;What happens if the cleaning isn&rsquo;t good enough? Do we get a second chance?&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Templates Used</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 46x</div>
+        <div class="tmpl-no">&ldquo;Med mindre annet er skriftlig avtalt, forventes det at det gjennomf&oslash;res en grundig utvask av leiligheten ved utflytting. Dette omfatter blant annet rengj&oslash;ring av alle overflater, sluk, vask, ovn, kj&oslash;leskap, o.l.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Unless otherwise agreed in writing, a thorough cleaning of the apartment is expected at move-out. This includes cleaning of all surfaces, drains, sinks, oven, fridge, etc.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 46x</div>
+        <div class="tmpl-no">&ldquo;Ved mangelfull utvask vil kostnader for utbedring kunne bli viderefakturert leietaker.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;In case of insufficient cleaning, remediation costs may be invoiced to the tenant.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 39x</div>
+        <div class="tmpl-no">&ldquo;Ved fraflytting m&aring; boligen v&aelig;r klar for overlevering innen kl. 11:00 p&aring; den avtalte sluttdatoen i kontrakten.&rdquo;</div>
+        <div class="tmpl-en">&ldquo;At move-out, the apartment must be ready for handover by 11:00 AM on the agreed end date in the contract.&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">Sent 33x</div>
+        <div class="tmpl-no">&ldquo;Siste mulige utflyttingsdato for sommeren 2025 er 15.06.2025. Dersom dere &oslash;nsker &aring; flytte ut tidligere, er dette fullt mulig!&rdquo;</div>
+        <div class="tmpl-en">&ldquo;The latest possible move-out date for summer 2025 is June 15, 2025. If you want to move out earlier, that is absolutely possible!&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Send the complete move-out checklist: deadline (11:00 AM), cleaning requirements, deposit return process, early move-out option. The same block is sent to every tenant every cycle.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 11. Availability Check -->
+<div class="qa-category">
+  <div class="qa-category-header">
+    <h4>11. Availability Check</h4>
+    <span class="qa-count-badge">49 questions</span>
+  </div>
+  <div class="qa-body">
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Tenant Questions</div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er denne leiligheten fortsatt tilgjengelig?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Is this apartment still available?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Heisann, er denne ledig?&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Hey there, is this one available?&rdquo;</div></div>
+      <div class="qa-pair"><div class="qa-no"><span class="qa-lang-label no">NO</span> &ldquo;Er den fremdeles ledig? Eller om du har noe tilsvarende.&rdquo;</div><div class="qa-en"><span class="qa-lang-label en">EN</span> &ldquo;Is it still available? Or if you have something similar.&rdquo;</div></div>
+    </div>
+    <div class="qa-subsection">
+      <div class="qa-subsection-title">Landlord Response Pattern</div>
+      <div class="template-block">
+        <div class="tmpl-repeat">If available</div>
+        <div class="tmpl-no">&ldquo;Ja, det er den. Jeg hadde 3 av den, n&aring; kun 1 igjen. Har du sett videovisningen i annonsen?&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Yes, it is. I had 3 of them, now only 1 left. Have you seen the video tour in the listing?&rdquo;</div>
+      </div>
+      <div class="template-block">
+        <div class="tmpl-repeat">If unavailable</div>
+        <div class="tmpl-no">&ldquo;Det er den dessverre ikke, men vi har noen andre 2-roms leiligheter igjen om du vil jeg skal sende over :)&rdquo;</div>
+        <div class="tmpl-en">&ldquo;Unfortunately it&rsquo;s not, but we have some other 2-room apartments left if you&rsquo;d like me to send them over :)&rdquo;</div>
+      </div>
+    </div>
+    <div class="qa-subsection">
+      <div class="llm-action"><strong>LLM action:</strong> Check real-time availability database, respond with status. If unavailable, suggest alternatives from current listings. If available, trigger the viewing template. Instant, 24/7 &mdash; critical during peak season.</div>
+    </div>
+  </div>
+</div>
+
+  <div class="card" style="text-align:center; padding:28px; margin-top:32px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border:1px solid #93c5fd;">
+    <p style="font-size:1.15em; color:var(--primary); font-weight:600; margin-bottom:8px;">These 11 categories represent 1,493 questions with known, repeatable answers.</p>
+    <p style="font-size:0.95em; color:var(--text-light);">The landlord is already treating them as templates &mdash; the same 15&ndash;20 message blocks are copied and pasted <strong>hundreds of times</strong>. An LLM simply removes the manual step and adds instant 24/7 delivery, multilingual support, and per-apartment personalization.</p>
+  </div>
+
+</section>
+
+<!-- ===== SECTION 6: PER PROPERTY ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">6</div>
+    <h2>Property-Level Risk Analysis</h2>
+    <p>Each property has a different escalation profile. Higher ratio = more urgent need for automation.</p>
+  </div>
+
+  <div class="property-grid">
+
+    <div class="property-card" style="border-left: 4px solid #dc3545;">
+      <h4>Nye Sandviksveien 18 <span class="risk-badge critical">Critical</span></h4>
+      <div class="property-stat"><span>Messages</span><span>2,373</span></div>
+      <div class="property-stat"><span>Tenant questions</span><span>101</span></div>
+      <div class="property-stat"><span>Escalation events</span><span>50</span></div>
+      <div class="property-stat"><span>Apologies</span><span>19</span></div>
+      <div class="property-stat"><span>Escalation ratio</span><span style="color:#dc3545; font-weight:800;">0.50</span></div>
+    </div>
+
+    <div class="property-card" style="border-left: 4px solid #ea580c;">
+      <h4>Kong Oscars Gate 16 <span class="risk-badge high">High</span></h4>
+      <div class="property-stat"><span>Messages</span><span>6,369</span></div>
+      <div class="property-stat"><span>Tenant questions</span><span>278</span></div>
+      <div class="property-stat"><span>Escalation events</span><span>69</span></div>
+      <div class="property-stat"><span>Apologies</span><span>33</span></div>
+      <div class="property-stat"><span>Escalation ratio</span><span style="color:#ea580c; font-weight:800;">0.25</span></div>
+    </div>
+
+    <div class="property-card" style="border-left: 4px solid #eab308;">
+      <h4>Vestre Holbergsallmenningen <span class="risk-badge moderate">Moderate</span></h4>
+      <div class="property-stat"><span>Messages</span><span>6,606</span></div>
+      <div class="property-stat"><span>Tenant questions</span><span>259</span></div>
+      <div class="property-stat"><span>Escalation events</span><span>49</span></div>
+      <div class="property-stat"><span>Apologies</span><span>26</span></div>
+      <div class="property-stat"><span>Escalation ratio</span><span style="color:#eab308; font-weight:800;">0.19</span></div>
+    </div>
+
+    <div class="property-card" style="border-left: 4px solid #eab308;">
+      <h4>Nyg&aring;rdsgaten 94 <span class="risk-badge moderate">Moderate</span></h4>
+      <div class="property-stat"><span>Messages</span><span>22,270</span></div>
+      <div class="property-stat"><span>Tenant questions</span><span>1,144</span></div>
+      <div class="property-stat"><span>Escalation events</span><span>157</span></div>
+      <div class="property-stat"><span>Apologies</span><span>117</span></div>
+      <div class="property-stat"><span>Escalation ratio</span><span style="color:#eab308; font-weight:800;">0.14</span></div>
+    </div>
+
+    <div class="property-card" style="border-left: 4px solid #22c55e;">
+      <h4>Nedre Dynnersmauet 2 <span class="risk-badge low">Low</span></h4>
+      <div class="property-stat"><span>Messages</span><span>6,348</span></div>
+      <div class="property-stat"><span>Tenant questions</span><span>339</span></div>
+      <div class="property-stat"><span>Escalation events</span><span>39</span></div>
+      <div class="property-stat"><span>Apologies</span><span>22</span></div>
+      <div class="property-stat"><span>Escalation ratio</span><span style="color:#22c55e; font-weight:800;">0.12</span></div>
+    </div>
+
+    <div class="property-card" style="border-left: 4px solid #22c55e;">
+      <h4>Finneg&aring;rdsgaten 7 / Strandgaten <span class="risk-badge low">Low</span></h4>
+      <div class="property-stat"><span>Messages</span><span>8,749</span></div>
+      <div class="property-stat"><span>Tenant questions</span><span>410</span></div>
+      <div class="property-stat"><span>Escalation events</span><span>46</span></div>
+      <div class="property-stat"><span>Apologies</span><span>36</span></div>
+      <div class="property-stat"><span>Escalation ratio</span><span style="color:#22c55e; font-weight:800;">0.11</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== SECTION 7: BEFORE / AFTER ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">7</div>
+    <h2>Before vs. After: The Projected Impact</h2>
+    <p>Based on the patterns in your actual conversation data.</p>
+  </div>
+
+  <div class="comparison-grid">
+    <div class="comparison-col before">
+      <h3 style="color:#991b1b;">Today (Manual)</h3>
+      <ul>
+        <li><strong>~35 hrs/month</strong> on tenant communication</li>
+        <li>Response time: <strong>hours to days</strong></li>
+        <li>Vacation = <strong>zero coverage</strong> (48 notices sent)</li>
+        <li><strong>623</strong> escalation events in dataset</li>
+        <li><strong>547</strong> apology messages sent</li>
+        <li><strong>25</strong> "sorry for late reply" instances</li>
+        <li>Manual copy-paste of <strong>same 15 templates</strong></li>
+        <li>Languages: Norwegian only (inconsistent)</li>
+        <li>Maintenance follow-ups: <strong>3.2 per ticket</strong></li>
+        <li>Peak months: capacity <strong>degrades</strong></li>
+      </ul>
+    </div>
+    <div class="comparison-arrow">&rarr;</div>
+    <div class="comparison-col after">
+      <h3 style="color:#166534;">With LLM Assistant</h3>
+      <ul>
+        <li><strong>~4.7 hrs/month</strong> on tenant communication</li>
+        <li>Response time: <strong>under 30 seconds</strong></li>
+        <li>Vacation = <strong>100% covered, 24/7/365</strong></li>
+        <li><strong>~217</strong> escalation events (&#8209;65%)</li>
+        <li><strong>~100</strong> apology messages (&#8209;82%)</li>
+        <li><strong>0</strong> "sorry for late reply" needed</li>
+        <li><strong>Automated</strong> template selection + personalization</li>
+        <li>Languages: NO, SE, EN <strong>natively</strong></li>
+        <li>Maintenance follow-ups: <strong>2.0 per ticket</strong> (&#8209;37%)</li>
+        <li>Peak months: <strong>scales infinitely</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="savings-highlight">
+    <div class="big-number">86%</div>
+    <div class="big-label">Reduction in Communication Management Time</div>
+    <p style="margin-top:12px; color:var(--text-light);">From ~35 hours/month down to ~4.7 hours/month</p>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px; color:var(--primary);">Detailed Time Savings Breakdown</h3>
+    <table>
+      <tr><th>Task</th><th>Current (hrs/mo)</th><th>With LLM</th><th>Saved</th></tr>
+      <tr><td>Template copy-paste</td><td>4.0</td><td>0</td><td style="color:var(--success); font-weight:700;">4.0 hrs</td></tr>
+      <tr><td>FAQ answering</td><td>7.1</td><td>0.7</td><td style="color:var(--success); font-weight:700;">6.4 hrs</td></tr>
+      <tr><td>Maintenance follow-ups</td><td>5.3</td><td>1.0</td><td style="color:var(--success); font-weight:700;">4.3 hrs</td></tr>
+      <tr><td>Move-in logistics (Aug peak)</td><td>8.0</td><td>0.5</td><td style="color:var(--success); font-weight:700;">7.5 hrs</td></tr>
+      <tr><td>Viewing scheduling</td><td>3.0</td><td>0.3</td><td style="color:var(--success); font-weight:700;">2.7 hrs</td></tr>
+      <tr><td>Deposit questions</td><td>2.5</td><td>0.3</td><td style="color:var(--success); font-weight:700;">2.2 hrs</td></tr>
+      <tr><td>Maintenance triage</td><td>2.2</td><td>0.4</td><td style="color:var(--success); font-weight:700;">1.8 hrs</td></tr>
+      <tr><td>Escalation handling</td><td>3.3</td><td>1.5</td><td style="color:var(--success); font-weight:700;">1.8 hrs</td></tr>
+      <tr style="background:#f0fdf4;"><td><strong>TOTAL</strong></td><td><strong>~35 hrs</strong></td><td><strong>~4.7 hrs</strong></td><td style="color:var(--success); font-weight:800;">~30.3 hrs saved</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px; color:var(--primary);">Projected Escalation Reduction</h3>
+    <table>
+      <tr><th>Level</th><th>Current</th><th>Projected</th><th>Reduction</th></tr>
+      <tr><td>L1 &mdash; Polite follow-ups</td><td>15</td><td>3</td><td style="color:var(--success); font-weight:700;">-80%</td></tr>
+      <tr><td>L2 &mdash; Impatient</td><td>41</td><td>8</td><td style="color:var(--success); font-weight:700;">-80%</td></tr>
+      <tr><td>L3 &mdash; Frustrated</td><td>386</td><td>116</td><td style="color:var(--success); font-weight:700;">-70%</td></tr>
+      <tr><td>L4 &mdash; Legal threats</td><td>181</td><td>90</td><td style="color:var(--success); font-weight:700;">-50%</td></tr>
+      <tr style="background:#f0fdf4;"><td><strong>TOTAL</strong></td><td><strong>623</strong></td><td><strong>~217</strong></td><td style="color:var(--success); font-weight:800;">-65%</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ===== SECTION 8: ADDITIONAL BENEFITS ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">8</div>
+    <h2>Additional Strategic Benefits</h2>
+    <p>Beyond time savings, the LLM creates value across your entire operation.</p>
+  </div>
+
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap:20px;">
+    <div class="card">
+      <h3 style="color:var(--accent); margin-bottom:10px;">&#9201; Vacation Coverage</h3>
+      <p style="font-size:0.92em;">Your data contains <strong>48 vacation notices</strong> each in Norwegian and English. During these periods, questions went unanswered for days and tenants escalated to personal phone numbers. The LLM provides seamless 24/7 coverage &mdash; your vacation becomes invisible to tenants.</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--accent); margin-bottom:10px;">&#127760; Multilingual Support</h3>
+      <p style="font-size:0.92em;">2.6% of your tenants communicate in Swedish or English. International students face friction with BankID signing, international payments, and Norwegian rental customs. The LLM responds natively in all three languages.</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--accent); margin-bottom:10px;">&#128176; Late Payment Prevention</h3>
+      <p style="font-size:0.92em;">Your data contains <strong>64 formal eviction warnings</strong>. Proactive payment reminders, instant invoice explanations, and early flagging of at-risk tenants can prevent many of these situations before they escalate.</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--accent); margin-bottom:10px;">&#127968; Faster Unit Filling</h3>
+      <p style="font-size:0.92em;">221 viewing-related questions in the data. In Bergen's competitive student market, responding within minutes rather than hours means filling units faster. Every vacant day in July-August is lost rent.</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--accent); margin-bottom:10px;">&#128736; Maintenance Intelligence</h3>
+      <p style="font-size:0.92em;">152 tickets at 3.2 follow-ups each. The LLM triages instantly, creates tickets, sends proactive status updates, and reduces back-and-forth by 37%. Tenants feel heard; you spend less time chasing updates.</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--accent); margin-bottom:10px;">&#128200; Scalability</h3>
+      <p style="font-size:0.92em;">Your current system degrades during peak months (Aug 2025 = 779 messages). An LLM handles 10 properties as easily as 1. Growth no longer means hiring more staff for communication.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 9: SUMMARY ===== -->
+<section>
+  <div class="section-header">
+    <div class="section-number">9</div>
+    <h2>The Bottom Line</h2>
+  </div>
+
+  <div class="card" style="text-align:center; padding:40px;">
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:30px; margin-bottom:30px;">
+      <div>
+        <div style="font-size:3em; font-weight:900; color:var(--success);">86%</div>
+        <div style="font-size:0.9em; color:var(--text-light); font-weight:600;">Less time on comms</div>
+      </div>
+      <div>
+        <div style="font-size:3em; font-weight:900; color:var(--accent);">59%</div>
+        <div style="font-size:0.9em; color:var(--text-light); font-weight:600;">Questions answered instantly</div>
+      </div>
+      <div>
+        <div style="font-size:3em; font-weight:900; color:var(--danger);">-65%</div>
+        <div style="font-size:0.9em; color:var(--text-light); font-weight:600;">Fewer escalation events</div>
+      </div>
+      <div>
+        <div style="font-size:3em; font-weight:900; color:var(--warning);">24/7</div>
+        <div style="font-size:0.9em; color:var(--text-light); font-weight:600;">Coverage, all languages</div>
+      </div>
+    </div>
+    <p style="font-size:1.1em; color:var(--text); max-width:700px; margin:0 auto;">Your data already contains the patterns, templates, and knowledge an LLM needs. 42.7% of your long messages are already exact copies. The question isn't whether to automate &mdash; it's how quickly you can start.</p>
+  </div>
+</section>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <p>Analysis based on 52,715 messages across 6 properties &middot; Data period: 2023&ndash;2025</p>
+  <p style="margin-top:6px;">Nyg&aring;rdsgaten 94 &middot; Kong Oscars Gate 16 &middot; Nye Sandviksveien 18 &middot; Vestre Holbergsallmenningen &middot; Finneg&aring;rdsgaten 7/Strandgaten &middot; Nedre Dynnersmauet 2</p>
+  <p style="margin-top:16px; opacity:0.5;">Generated March 2026</p>
+</div>
+
+</body>
+</html>
